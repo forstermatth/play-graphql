@@ -19,4 +19,4 @@ playGraphql('Rainbow');
 
 ## License
 
-MIT © [Matt Forster](www.twitter.com/forstermatth)
+MIT © [Matt Forster](https://www.twitter.com/forstermatth)
