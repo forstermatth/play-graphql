@@ -1,25 +1,59 @@
 // hello
 import {
+  inspect
+} from 'util';
+
+import {
   graphql,
   GraphQLSchema,
   GraphQLObjectType,
-  GraphQLString
+  GraphQLString,
+  GraphQLNonNull,
 } from 'graphql';
 
-var schema = new GraphQLSchema({
-  query: new GraphQLObjectType({
-    name: 'Root',
-    fields: {
-      hello: {
-        type: GraphQLString,
-        resolve: () => 'world'
-      }
+var data = {
+  'zero': {
+    version: '0.0.0-dev',
+    name: 'GRAPHYQL'
+  }
+};
+
+var apiInfo = new GraphQLObjectType({
+  name: 'APIInfo',
+  description: 'The base info about the API',
+  fields: () => ({
+    version: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'The API semver',
+    },
+    datePublished: {
+      type: GraphQLString,
+      description: 'The last date published',
+    },
+    name: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'The API\'s name!',
     }
   })
 });
 
-var query = '{ hello }';
+var root = new GraphQLObjectType({
+  name: 'Root',
+  fields: {
+    base: {
+      type: apiInfo,
+      args: {id: {name: 'id', type: new GraphQLNonNull(GraphQLString)}},
+      resolve: (root, {id}) => data[id]
+    }
+  }
+});
+
+var schema = new GraphQLSchema({
+  query: root
+});
+
+var query = '{ base(id: "zero") { name, version } }';
 
 graphql(schema, query).then(result => {
- console.log(result);
+ console.log(inspect(result, {depth: null}));
 });
